@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Google+Sans:wght@100..700&family=Playpen+Sans:wght@100..800&family=Titan+One&display=swap");
 @import "tailwindcss";
 
 html,
@@ -11,13 +12,19 @@ body,
   overflow-x: hidden;
   background-color: #000;
   color: #fff;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-gsans);
 }
 
 @theme {
+  /*COLORS*/
   --color-brand-main: #1B4417;
   --color-brand-secondary: #9EE97F;
   --color-brand-grey: #585858;
   --color-white: #FFFFFF;
   --color-black: #000000;
+  --color-off-white: #FAF9F6
+
+  /*FONTS*/
+  --font-gsans: "Google Sans", "Segoe UI", sans-serif;
+  --font-playpen: "Playpen Sans", "Segoe Print", cursive, sans-serif;
 }
