@@ -4,13 +4,13 @@ import { motion, useReducedMotion } from "motion/react";
 import {
   faHouse,
   faCube,
-  faCircleInfo,
+  faTree,
 } from "@fortawesome/free-solid-svg-icons";
 
 const navItems = [
   { name: "Home", path: "/", icon: faHouse },
-  { name: "3D environments", path: "/environments", icon: faCube },
-  { name: "About", path: "/about", icon: faCircleInfo },
+  { name: "Environments", path: "/environments", icon: faTree },
+  { name: "My Uploads", path: "/projects", icon: faCube },
 ];
 
 export default function FloatingNav() {

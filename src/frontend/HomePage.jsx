@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import '../style.css';
 import heroImg from '../assets/hero.png';
+import create from '../assets/create.jpg';
+import upload from '../assets/upload.png';
+import explore from '../assets/explore.jpg';
 import footerImg from '../assets/footer.png';
-import FloatingNav from '../components/navBar';
+import FloatingNav from '../components/NavBar';
+import { useNavigate } from 'react-router-dom';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Footer from '../components/footer';
+import Footer from '../components/Footer';
 import {
   motion,
   useMotionValue,
@@ -24,17 +28,17 @@ const featureCards = [
   {
     title: 'Create your environment',
     body: 'Build quick concept scenes with your preferred layout and materials.',
-    image: heroImg,
+    image: create,
   },
   {
     title: 'Mount your asset',
     body: 'Preview models, objects, and scenes in a clean presentation workspace.',
-    image: heroImg,
+    image: upload,
   },
   {
     title: 'Explore in VR',
     body: 'Inspect your environment in immersive viewing mode with responsive controls.',
-    image: heroImg,
+    image: explore,
   },
 ];
 
@@ -81,7 +85,7 @@ function useRevealVariants() {
 
 /* ---------- hero with mouse parallax ---------- */
 
-function Hero() {
+function Hero({ onViewProjects }) {
   const reduce = useReducedMotion();
 
   // pointer position inside the hero, -0.5 → 0.5 on each axis
@@ -135,7 +139,7 @@ function Hero() {
           cross-platform rendering.
         </p>
 
-        <button className='rounded-full bg-brand-secondary p-4 px-6 text-base font-medium text-on-accent font-gsans shadow-sm transition hover:brightness-95'>
+        <button onClick={onViewProjects} className='rounded-full bg-brand-secondary p-4 px-6 text-base font-medium text-on-accent font-gsans shadow-sm transition-all duration-200 ease-out hover:-translate-y-1 hover:scale-105 hover:brightness-95 hover:shadow-lg focus-visible:-translate-y-1 focus-visible:scale-105'>
           View Live Projects
           <FontAwesomeIcon icon={faArrowRight} className='ml-4' />
         </button>
@@ -148,6 +152,7 @@ function Hero() {
 
 export default function HomePage() {
   const [form, setForm] = useState(initialForm);
+  const navigate = useNavigate();
   const { stagger, item, fromLeft } = useRevealVariants();
 
   const handleChange = (e) =>
@@ -161,7 +166,7 @@ export default function HomePage() {
   return (
     // Matches the next section's colour so nothing dark can show beneath the hero
     <main>
-      <Hero />
+      <Hero onViewProjects={() => navigate('/environments')} />
 
       <FloatingNav />
 
@@ -228,7 +233,8 @@ export default function HomePage() {
 
             <motion.button
               variants={item}
-              className='mt-10 rounded-full bg-brand-secondary px-8 py-4 text-lg font-medium text-on-accent font-gsans shadow-sm transition hover:brightness-95'
+              onClick={() => navigate('/projects')}
+              className='mt-10 rounded-full bg-brand-secondary px-8 py-4 text-lg font-medium text-on-accent font-gsans shadow-sm transition-all duration-200 ease-out hover:-translate-y-1 hover:scale-105 hover:brightness-95 hover:shadow-lg focus-visible:-translate-y-1 focus-visible:scale-105'
             >
               Upload my Environment <FontAwesomeIcon icon={faArrowRight} className='ml-2' />
             </motion.button>
@@ -322,7 +328,7 @@ export default function HomePage() {
             <motion.button
               variants={item}
               type='submit'
-              className='mt-2 self-stretch rounded-lg bg-brand-secondary p-4 px-6 text-base font-medium text-on-accent sm:self-start'
+              className='mt-2 self-stretch rounded-lg bg-brand-secondary p-4 px-6 text-base font-medium text-on-accent transition-all duration-200 ease-out hover:-translate-y-1 hover:scale-105 hover:shadow-lg focus-visible:-translate-y-1 focus-visible:scale-105 sm:self-start'
             >
               Send message
             </motion.button>

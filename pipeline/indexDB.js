@@ -1,160 +1,144 @@
 const DB_NAME = "ThreePipelineDB";
-const DB_VERSION = 1;
-const STORE_NAME = "assets";
+const DB_VERSION = 2;
+
+const META_STORE = "assets"; // lightweight records (listing is fast)
+const BUFFER_STORE = "buffers"; // raw ArrayBuffers, keyed by asset id
 
 class IndexDB {
   constructor() {
     this.db = null;
+    this.opening = null;
   }
 
-  async open() {
-    if (this.db) return this.db;
+  open() {
+    if (this.db) return Promise.resolve(this.db);
+    if (this.opening) return this.opening;
 
-    return new Promise((resolve, reject) => {
+    this.opening = new Promise((resolve, reject) => {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
 
       request.onupgradeneeded = (event) => {
         const db = event.target.result;
 
-        if (!db.objectStoreNames.contains(STORE_NAME)) {
-          const store = db.createObjectStore(STORE_NAME, {
+        if (!db.objectStoreNames.contains(META_STORE)) {
+          const store = db.createObjectStore(META_STORE, {
             keyPath: "id",
           });
+          store.createIndex("name", "name", { unique: false });
+          store.createIndex("createdAt", "createdAt", { unique: false });
+        }
 
-          store.createIndex("name", "name", {
-            unique: false,
-          });
-
-          store.createIndex("createdAt", "createdAt", {
-            unique: false,
-          });
+        // v2: binary data lives in its own store
+        if (!db.objectStoreNames.contains(BUFFER_STORE)) {
+          db.createObjectStore(BUFFER_STORE);
         }
       };
 
-      request.onsuccess = (event) => {
-        this.db = event.target.result;
+      request.onsuccess = () => {
+        this.db = request.result;
+        this.db.onversionchange = () => {
+          this.db.close();
+          this.db = null;
+          this.opening = null;
+        };
         resolve(this.db);
       };
 
       request.onerror = () => {
+        this.opening = null;
         reject(request.error);
       };
     });
+
+    return this.opening;
   }
 
-  async saveAsset(asset) {
+  /**
+   * One helper for every operation.
+   * `work(tx)` may return an IDBRequest; its result is what we resolve with
+   * once the whole transaction has committed.
+   */
+  async run(stores, mode, work) {
     const db = await this.open();
 
     return new Promise((resolve, reject) => {
-      const transaction = db.transaction(
-        STORE_NAME,
-        "readwrite"
-      );
+      const tx = db.transaction(stores, mode);
+      let result;
 
-      const store = transaction.objectStore(STORE_NAME);
+      tx.oncomplete = () => resolve(result);
+      tx.onerror = () => reject(tx.error);
+      tx.onabort = () => reject(tx.error);
 
-      const request = store.put(asset);
+      const request = work(tx);
 
-      request.onsuccess = () => {
-        resolve(asset);
-      };
-
-      request.onerror = () => {
-        reject(request.error);
-      };
+      if (request) {
+        request.onsuccess = () => {
+          result = request.result;
+        };
+      }
     });
+  }
+
+  /** Save metadata (+ optional buffer) atomically. */
+  async saveAsset(meta, buffer = null) {
+    await this.run([META_STORE, BUFFER_STORE], "readwrite", (tx) => {
+      tx.objectStore(META_STORE).put(meta);
+
+      if (buffer) {
+        tx.objectStore(BUFFER_STORE).put(buffer, meta.id);
+      }
+    });
+
+    return meta;
+  }
+
+  async saveBuffer(id, buffer) {
+    await this.run(BUFFER_STORE, "readwrite", (tx) =>
+      tx.objectStore(BUFFER_STORE).put(buffer, id)
+    );
   }
 
   async getAsset(id) {
-    const db = await this.open();
-
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction(
-        STORE_NAME,
-        "readonly"
-      );
-
-      const store = transaction.objectStore(STORE_NAME);
-
-      const request = store.get(id);
-
-      request.onsuccess = () => {
-        resolve(request.result || null);
-      };
-
-      request.onerror = () => {
-        reject(request.error);
-      };
-    });
+    return (
+      (await this.run(META_STORE, "readonly", (tx) =>
+        tx.objectStore(META_STORE).get(id)
+      )) || null
+    );
   }
 
+  async getBuffer(id) {
+    return (
+      (await this.run(BUFFER_STORE, "readonly", (tx) =>
+        tx.objectStore(BUFFER_STORE).get(id)
+      )) || null
+    );
+  }
+
+  /** Metadata only: never pulls model bytes into memory. */
   async getAllAssets() {
-    const db = await this.open();
-
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction(
-        STORE_NAME,
-        "readonly"
-      );
-
-      const store = transaction.objectStore(STORE_NAME);
-
-      const request = store.getAll();
-
-      request.onsuccess = () => {
-        resolve(request.result || []);
-      };
-
-      request.onerror = () => {
-        reject(request.error);
-      };
-    });
+    return (
+      (await this.run(META_STORE, "readonly", (tx) =>
+        tx.objectStore(META_STORE).getAll()
+      )) || []
+    );
   }
 
   async deleteAsset(id) {
-    const db = await this.open();
-
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction(
-        STORE_NAME,
-        "readwrite"
-      );
-
-      const store = transaction.objectStore(STORE_NAME);
-
-      const request = store.delete(id);
-
-      request.onsuccess = () => {
-        resolve(true);
-      };
-
-      request.onerror = () => {
-        reject(request.error);
-      };
+    await this.run([META_STORE, BUFFER_STORE], "readwrite", (tx) => {
+      tx.objectStore(META_STORE).delete(id);
+      tx.objectStore(BUFFER_STORE).delete(id);
     });
+
+    return true;
   }
 
   async clearAssets() {
-    const db = await this.open();
-
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction(
-        STORE_NAME,
-        "readwrite"
-      );
-
-      const store = transaction.objectStore(STORE_NAME);
-
-      const request = store.clear();
-
-      request.onsuccess = () => {
-        resolve(true);
-      };
-
-      request.onerror = () => {
-        reject(request.error);
-      };
+    await this.run([META_STORE, BUFFER_STORE], "readwrite", (tx) => {
+      tx.objectStore(META_STORE).clear();
+      tx.objectStore(BUFFER_STORE).clear();
     });
+
+    return true;
   }
 }
 
