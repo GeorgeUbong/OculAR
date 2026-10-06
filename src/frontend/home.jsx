@@ -5,6 +5,7 @@ import footerImg from '../assets/footer.png';
 import FloatingNav from '../components/navBar';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Footer from '../components/footer';
 import {
   motion,
   useMotionValue,
@@ -13,10 +14,11 @@ import {
   useReducedMotion,
 } from 'motion/react';
 
+
 const initialForm = { name: '', email: '', message: '' };
 
 const fieldClass =
-  'w-full rounded-md bg-neutral-100 px-3 py-2.5 text-sm text-neutral-800 placeholder:text-neutral-400 border border-neutral-200 focus:border-[#1b3a12] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a6ee7c]';
+  'w-full rounded-md border border-copy/15 bg-surface px-3 py-2.5 text-sm text-copy placeholder:text-muted focus:border-brand-secondary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary';
 
 const featureCards = [
   {
@@ -110,6 +112,7 @@ function Hero() {
     <section
       onMouseMove={handleMove}
       onMouseLeave={handleLeave}
+      id='home'
       className='relative flex min-h-[80svh] w-full items-center justify-center overflow-hidden px-5 py-10 text-center text-white'
     >
       {/* Image layer is oversized (inset -5%) so it never reveals empty edges while moving */}
@@ -132,7 +135,7 @@ function Hero() {
           cross-platform rendering.
         </p>
 
-        <button className='rounded-full bg-brand-secondary p-4 px-6 text-base font-medium text-brand-grey font-gsans shadow-sm transition hover:brightness-95'>
+        <button className='rounded-full bg-brand-secondary p-4 px-6 text-base font-medium text-on-accent font-gsans shadow-sm transition hover:brightness-95'>
           View Live Projects
           <FontAwesomeIcon icon={faArrowRight} className='ml-4' />
         </button>
@@ -157,12 +160,12 @@ export default function HomePage() {
 
   return (
     // Matches the next section's colour so nothing dark can show beneath the hero
-    <main className='bg-[#dfe2e1]'>
+    <main>
       <Hero />
 
       <FloatingNav />
 
-      <section className='w-full bg-off-white px-6 pb-24 pt-20 text-center text-brand-main sm:px-8 sm:pt-24 lg:px-10 lg:pb-28 lg:pt-28'>
+      <section id='about' className='w-full bg-transparent px-6 pb-24 pt-20 text-center text-copy sm:px-8 sm:pt-24 lg:px-10 lg:pb-28 lg:pt-28'>
         <div className='mx-auto max-w-6xl'>
           {/* What is OculAR */}
           <motion.div variants={stagger} {...reveal}>
@@ -183,23 +186,23 @@ export default function HomePage() {
           {/* Feature cards: staggered one after another */}
           <motion.div variants={stagger} {...reveal} className='mt-16 grid gap-6 md:grid-cols-3 lg:gap-8'>
             {featureCards.map((feature) => (
-              <motion.div
-                key={feature.title}
-                variants={item}
-                className='overflow-hidden rounded-sm border border-brand-main/9 '
-              >
-                <div
-                  className='h-40 w-full bg-cover bg-center bg-no-repeat'
-                  style={{ backgroundImage: `url(${feature.image})` }}
-                />
+              <motion.div key={feature.title} variants={item} className='w-full'>
+                <div className='group h-full w-full overflow-hidden rounded-2xl border border-brand-main/5 bg-surface transition-all duration-300 hover:-translate-y-2 hover:bg-brand-main hover:shadow-2xl'>
+                  <div className='h-40 w-full overflow-hidden'>
+                    <div
+                      className='h-full w-full bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-105'
+                      style={{ backgroundImage: `url(${feature.image})` }}
+                    />
+                  </div>
 
-                <div className='px-5 pb-6 pt-5 text-left'>
-                  <h3 className='font-playpen text-2xl font-bold leading-tight text-brand-main sm:text-3xl'>
-                    {feature.title}
-                  </h3>
-                  <p className='mt-3 text-sm leading-relaxed text-brand-grey font-gsans sm:text-base'>
-                    {feature.body}
-                  </p>
+                  <div className='px-5 pb-6 pt-5 text-left'>
+                    <h3 className='font-playpen text-2xl font-bold leading-tight text-copy transition-colors duration-300 group-hover:text-brand-secondary sm:text-3xl'>
+                      {feature.title}
+                    </h3>
+                    <p className='mt-3 font-gsans text-sm leading-relaxed text-brand-grey transition-colors duration-300 group-hover:text-white/80 sm:text-base'>
+                      {feature.body}
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -207,7 +210,7 @@ export default function HomePage() {
 
           {/* View your Environments */}
           <motion.div variants={stagger} {...reveal} className='mt-20 text-center'>
-            <motion.h3 variants={item} className='font-playpen text-5xl font-bold text-brand-main '>
+            <motion.h3 variants={item} className='font-playpen text-5xl font-bold text-copy transition-transform duration-300 ease-in-out hover:-translate-y-1 hover:translate-x-1'>
               View your Environments
             </motion.h3>
 
@@ -225,7 +228,7 @@ export default function HomePage() {
 
             <motion.button
               variants={item}
-              className='mt-10 rounded-full bg-brand-secondary px-8 py-4 text-lg font-medium text-brand-grey font-gsans shadow-sm transition hover:brightness-95'
+              className='mt-10 rounded-full bg-brand-secondary px-8 py-4 text-lg font-medium text-on-accent font-gsans shadow-sm transition hover:brightness-95'
             >
               Upload my Environment <FontAwesomeIcon icon={faArrowRight} className='ml-2' />
             </motion.button>
@@ -234,9 +237,10 @@ export default function HomePage() {
       </section>
 
       <footer
-        className='w-full bg-white px-5 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20'
+        id='contact'
+        className='w-full bg-surface px-5 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20'
         style={{
-          backgroundImage: `url(${footerImg})`,
+          backgroundImage: `linear-gradient(var(--support-overlay), var(--support-overlay)), url(${footerImg})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -250,10 +254,10 @@ export default function HomePage() {
             {...reveal}
             className='text-center md:text-left'
           >
-            <h2 className='font-playpen text-3xl font-bold leading-tight text-[#1b3a12] sm:text-4xl lg:text-5xl'>
+            <h2 className='font-playpen text-3xl font-bold leading-tight text-copy sm:text-4xl lg:text-5xl'>
               Talk to OculAR Support Team
             </h2>
-            <p className='mx-auto mt-4 max-w-md font-gsans text-base text-neutral-600 md:mx-0 lg:text-lg'>
+            <p className='mx-auto mt-4 max-w-md font-gsans text-base text-copy md:mx-0 lg:text-lg'>
               Feel free to reach out for help with your order or any questions you may have regarding your purchase.
             </p>
           </motion.div>
@@ -266,7 +270,7 @@ export default function HomePage() {
             className='flex w-full flex-col gap-4 font-gsans'
           >
             <motion.div variants={item} className='flex flex-col gap-1.5'>
-              <label htmlFor='contact-name' className='text-xs text-neutral-700'>
+              <label htmlFor='contact-name' className='text-xs text-copy'>
                 Enter your name
               </label>
               <input
@@ -283,7 +287,7 @@ export default function HomePage() {
             </motion.div>
 
             <motion.div variants={item} className='flex flex-col gap-1.5'>
-              <label htmlFor='contact-email' className='text-xs text-neutral-700'>
+              <label htmlFor='contact-email' className='text-xs text-copy'>
                 Enter your Email
               </label>
               <input
@@ -300,7 +304,7 @@ export default function HomePage() {
             </motion.div>
 
             <motion.div variants={item} className='flex flex-col gap-1.5'>
-              <label htmlFor='contact-message' className='text-xs text-neutral-700'>
+              <label htmlFor='contact-message' className='text-xs text-copy'>
                 Enter your message
               </label>
               <textarea
@@ -318,13 +322,15 @@ export default function HomePage() {
             <motion.button
               variants={item}
               type='submit'
-              className='mt-2 self-stretch rounded-lg bg-brand-secondary p-4 px-6 text-base font-medium text-brand-grey sm:self-start'
+              className='mt-2 self-stretch rounded-lg bg-brand-secondary p-4 px-6 text-base font-medium text-on-accent sm:self-start'
             >
               Send message
             </motion.button>
           </motion.form>
         </div>
       </footer>
+
+      <Footer />
     </main>
   );
 }

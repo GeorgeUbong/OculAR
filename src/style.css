@@ -1,8 +1,82 @@
-@import url("https://fonts.googleapis.com/css2?family=Google+Sans:wght@100..700&family=Playpen+Sans:wght@100..800&family=Titan+One&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,100..1000&family=Titan+One&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Playpen+Sans:wght@100..800&display=swap");
+
 @import "tailwindcss";
 
+@theme {
+  /* COLORS */
+  --color-brand-main: #1B4417;
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-grey: var(--text-muted);
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+  --color-off-white: var(--page-surface);
+  --color-surface: var(--surface);
+  --color-copy: var(--text-primary);
+  --color-on-accent: var(--text-on-accent);
+
+  /* FONTS */
+  --font-gsans: "Google Sans Flex", "Segoe UI", sans-serif;
+  --font-playpen: "Playpen Sans", "Segoe Print", cursive, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+  --brand-secondary: #9ee97f;
+  --page-surface: #faf9f6;
+  --surface: #ffffff;
+  --text-primary: #1b4417;
+  --text-muted: #585858;
+  --text-on-accent: #24451e;
+  --page-bg: #ffffff;
+  --gradient-green-strong: rgb(158 233 127 / 62%);
+  --gradient-green-mid: rgb(207 237 195 / 65%);
+  --gradient-green-soft: rgb(226 243 217 / 68%);
+  --gradient-start: #ffffff;
+  --gradient-middle: #fbfdf9;
+  --gradient-end: #f2f9ec;
+  --support-overlay: rgb(255 255 255 / 8%);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --brand-secondary: #a8e989;
+  --page-surface: #111a13;
+  --surface: #1a261c;
+  --text-primary: #e6f1e2;
+  --text-muted: #becbb9;
+  --text-on-accent: #172716;
+  --page-bg: #0b100c;
+  --gradient-green-strong: rgb(83 154 60 / 30%);
+  --gradient-green-mid: rgb(51 105 43 / 28%);
+  --gradient-green-soft: rgb(37 76 35 / 30%);
+  --gradient-start: #111812;
+  --gradient-middle: #0d140f;
+  --gradient-end: #090e0a;
+  --support-overlay: rgb(5 12 6 / 78%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --brand-secondary: #a8e989;
+    --page-surface: #111a13;
+    --surface: #1a261c;
+    --text-primary: #e6f1e2;
+    --text-muted: #becbb9;
+    --text-on-accent: #172716;
+    --page-bg: #0b100c;
+    --gradient-green-strong: rgb(83 154 60 / 30%);
+    --gradient-green-mid: rgb(51 105 43 / 28%);
+    --gradient-green-soft: rgb(37 76 35 / 30%);
+    --gradient-start: #111812;
+    --gradient-middle: #0d140f;
+    --gradient-end: #090e0a;
+    --support-overlay: rgb(5 12 6 / 78%);
+  }
+}
+
 html,
-body,
 #root,
 #app {
   width: 100%;
@@ -10,21 +84,50 @@ body,
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-  background-color: #000;
-  color: #fff;
+  color: #1b4417;
   font-family: var(--font-gsans);
 }
 
-@theme {
-  /*COLORS*/
-  --color-brand-main: #1B4417;
-  --color-brand-secondary: #9EE97F;
-  --color-brand-grey: #585858;
-  --color-white: #FFFFFF;
-  --color-black: #000000;
-  --color-off-white: #FAF9F6
+html {
+  background-color: var(--page-bg);
+}
 
-  /*FONTS*/
-  --font-gsans: "Google Sans", "Segoe UI", sans-serif;
-  --font-playpen: "Playpen Sans", "Segoe Print", cursive, sans-serif;
+#root,
+#app {
+  background-color: transparent;
+}
+
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  color: var(--text-primary);
+  font-family: var(--font-gsans);
+  background-color: var(--page-bg);
+  background-image:
+    radial-gradient(ellipse at 12% 8%, var(--gradient-green-strong), transparent 48%),
+    radial-gradient(ellipse at 88% 38%, var(--gradient-green-mid), transparent 50%),
+    radial-gradient(ellipse at 22% 82%, var(--gradient-green-soft), transparent 52%),
+    linear-gradient(145deg, var(--gradient-start) 4%, var(--gradient-middle) 48%, var(--gradient-end) 100%);
+  background-attachment: fixed;
+  background-size: 160% 160%;
+  animation: page-background-drift 36s ease-in-out infinite alternate;
+}
+
+@keyframes page-background-drift {
+  from {
+    background-position: 0% 0%;
+  }
+
+  to {
+    background-position: 100% 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    animation: none;
+  }
 }
