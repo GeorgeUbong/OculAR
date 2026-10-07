@@ -2,11 +2,12 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBehance, faLinkedinIn, faXTwitter } from '@fortawesome/free-brands-svg-icons';
 import { faCube } from '@fortawesome/free-solid-svg-icons';
+import logo from '../assets/logo.png';
 
 const socials = [
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/', icon: faLinkedinIn },
-  { label: 'X', href: 'https://x.com/', icon: faXTwitter },
-  { label: 'Behance', href: 'https://www.behance.net/', icon: faBehance },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/ubongabasi-george-a33731234/?isSelfProfile=true', icon: faLinkedinIn },
+  { label: 'X', href: 'https://x.com/just_ubby', icon: faXTwitter },
+  { label: 'Behance', href: 'https://www.behance.net/2ubongGeorge', icon: faBehance },
 ];
 
 const linkGroups = [
@@ -19,7 +20,7 @@ const linkGroups = [
       { label: 'Upload an environment', href: '/environments#your-environments' },
     ],
   },
-  {
+  /**{
     title: 'Support',
     links: [
       { label: 'Help centre', href: '/help' },
@@ -34,7 +35,7 @@ const linkGroups = [
       { label: 'Terms of use', href: '/terms' },
       { label: 'Cookie settings', href: '/cookies' },
     ],
-  },
+  }, */
 ];
 
 const linkClass =
@@ -51,7 +52,7 @@ export default function Footer() {
                 aria-hidden='true'
                 className='flex h-10 w-10 items-center justify-center rounded-lg border border-dashed border-brand-secondary/60 text-brand-secondary'
               >
-                <FontAwesomeIcon icon={faCube} />
+                <img src={logo} alt='logo image'/>
               </span>
               <span className='font-playpen text-2xl font-bold'>OculAR</span>
             </a>
@@ -93,7 +94,7 @@ export default function Footer() {
             </p>
           </div>
 
-          <div className='grid grid-cols-2 gap-10 sm:col-span-2 sm:grid-cols-3 lg:col-span-4 lg:grid-cols-1 xl:grid-cols-3'>
+         <div className='grid grid-cols-2 gap-10 sm:col-span-2 sm:grid-cols-3 lg:col-span-4 lg:grid-cols-1 xl:grid-cols-3'>
             {linkGroups.map((group) => (
               <nav key={group.title} aria-label={group.title}>
                 <h3 className='font-gsans text-sm font-semibold text-brand-secondary'>
@@ -110,7 +111,7 @@ export default function Footer() {
                 </ul>
               </nav>
             ))}
-          </div>
+          </div> 
         </div>
 
         <div className='mt-14 flex flex-col gap-2 border-t border-white/15 pt-6 font-gsans text-xs text-white/60 sm:flex-row sm:items-center sm:justify-between'>

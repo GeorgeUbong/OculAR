@@ -1,14 +1,25 @@
-import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { disposeGLTF } from "./Gltfutils.js";
-
 const WIDTH = 640;
 const HEIGHT = 440;
 
-const loader = new GLTFLoader();
-
+let THREE;
+let loader;
+let disposeGLTF;
 let renderer = null;
 let queue = Promise.resolve();
+
+async function loadRendererDependencies() {
+  if (loader) return;
+
+  const [threeModule, loaderModule, utilsModule] = await Promise.all([
+    import("three"),
+    import("three/examples/jsm/loaders/GLTFLoader.js"),
+    import("./Gltfutils.js"),
+  ]);
+
+  THREE = threeModule;
+  loader = new loaderModule.GLTFLoader();
+  disposeGLTF = utilsModule.disposeGLTF;
+}
 
 // One shared renderer: browsers cap the number of live WebGL contexts.
 function getRenderer() {
@@ -24,6 +35,7 @@ function getRenderer() {
 }
 
 async function render(buffer) {
+  await loadRendererDependencies();
   const gltf = await loader.parseAsync(buffer, "");
 
   try {
