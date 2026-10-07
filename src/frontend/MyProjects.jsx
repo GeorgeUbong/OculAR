@@ -15,7 +15,7 @@ import {
 } from "motion/react";
 
 import { assetManager } from "../../pipeline/assetsManager.js";
-import { SceneManager } from "../../pipeline/SceneManager.js";
+import { SceneManager } from "../../pipeline/sceneManager.js";
 
 const UPLOAD_INPUT_ID = "asset-upload";
 const MAX_ASSETS = 3;
