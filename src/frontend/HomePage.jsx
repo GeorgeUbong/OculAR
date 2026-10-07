@@ -5,11 +5,11 @@ import create from '../assets/create.jpg';
 import upload from '../assets/upload.png';
 import explore from '../assets/explore.jpg';
 import footerImg from '../assets/footer.png';
-import FloatingNav from '../components/NavBar';
+import FloatingNav from '../components/navBar.jsx';
 import { useNavigate } from 'react-router-dom';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Footer from '../components/Footer';
+import Footer from '../components/footer.jsx';
 import {
   motion,
   useMotionValue,

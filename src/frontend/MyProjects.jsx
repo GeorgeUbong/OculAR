@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../style.css";
 import heroImg from "../assets/hero.png";
-import FloatingNav from "../components/NavBar.jsx";
-import Footer from "../components/Footer.jsx";
+import FloatingNav from "../components/navBar.jsx";
+import Footer from "../components/footer.jsx";
 import Modal from "../components/Modal.jsx";
-import { faPlus, faArrowLeft, faArrowRight, faUpload, faFileUpload } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faArrowLeft, faArrowRight, faCube, faFileUpload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     motion,
@@ -320,7 +320,7 @@ function Hero() {
             <div className="relative z-10 flex flex-col items-center gap-6">
                 <h1 className="text-3xl font-gsans font-medium sm:text-4xl">
                     <span className="font-playpen text-4xl font-bold sm:text-5xl">OculAR</span>{" "}
-                   View your 3D projects in VR
+                   View 3D space in VR
                 </h1>
 
                 <p className="max-w-5xl text-base font-gsans sm:text-lg">
@@ -335,8 +335,8 @@ function Hero() {
                     href="#projects"
                     className="rounded-full bg-brand-secondary p-4 px-6 text-base font-medium text-on-accent font-gsans shadow-sm transition-all duration-200 ease-out hover:-translate-y-1 hover:scale-105 hover:brightness-95 hover:shadow-lg focus-visible:-translate-y-1 focus-visible:scale-105"
                 >
-                    View my Projects
-                    <FontAwesomeIcon icon={faArrowRight} className="ml-4" />
+                    My Environments
+                    <FontAwesomeIcon icon={faCube} className="ml-4" />
                 </a>
             </div>
         </section>

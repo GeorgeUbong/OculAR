@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import '../style.css';
 import heroImg from '../assets/hero.png';
-import FloatingNav from '../components/NavBar.jsx';
-import Footer from '../components/Footer.jsx';
+import FloatingNav from '../components/navBar.jsx';
+import Footer from '../components/footer.jsx';
 import { faFileUpload, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate } from 'react-router-dom';
