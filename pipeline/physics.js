@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Vector3 } from "@babylonjs/core";
 
 const CELL = 4; // broadphase grid cell size (world units, XZ plane)
 const MAX_CELLS_PER_BOX = 64; // bigger boxes go in a "always check" list
@@ -14,8 +14,8 @@ class Physics {
     this.world = null;
 
     this.player = {
-      position: new THREE.Vector3(),
-      velocity: new THREE.Vector3(),
+      position: new Vector3(),
+      velocity: new Vector3(),
 
       radius: 0.35,
       height: 1.8,
@@ -35,7 +35,7 @@ class Physics {
     this.worldCache = new Map();
 
     // Scratch objects (no allocations in the frame loop)
-    this._box = new THREE.Box3();
+    this._box = { minimum: new Vector3(), maximum: new Vector3() };
     this._seen = new Set();
   }
 
@@ -43,12 +43,16 @@ class Physics {
 
   setWorld(scene) {
     this.world = scene;
+    if (!scene) {
+      this.clearColliders();
+      return;
+    }
 
-    let data = this.worldCache.get(scene.uuid);
+    let data = this.worldCache.get(scene.uniqueId);
 
     if (!data) {
       data = this.buildColliders(scene);
-      this.worldCache.set(scene.uuid, data);
+      this.worldCache.set(scene.uniqueId, data);
     }
 
     this.colliders = data.colliders;
@@ -58,7 +62,8 @@ class Physics {
 
   /** Call when a model is evicted from memory. */
   releaseWorld(scene) {
-    this.worldCache.delete(scene.uuid);
+    if (!scene) return;
+    this.worldCache.delete(scene.uniqueId);
 
     if (this.world === scene) {
       this.world = null;
@@ -69,14 +74,16 @@ class Physics {
   buildColliders(scene) {
     const data = { colliders: [], grid: new Map(), big: [] };
 
-    scene.updateMatrixWorld(true);
-
-    scene.traverse((object) => {
-      if (!object.isMesh) return;
-
-      const box = new THREE.Box3().setFromObject(object);
-
-      if (box.isEmpty()) return;
+    const meshes = [scene, ...scene.getChildMeshes(false)];
+    meshes.forEach((object) => {
+      if (!object.getBoundingInfo || object.isDisposed() || object.getTotalVertices() === 0) return;
+      object.computeWorldMatrix(true);
+      const bounds = object.getBoundingInfo().boundingBox;
+      const box = {
+        min: bounds.minimumWorld.clone(),
+        max: bounds.maximumWorld.clone(),
+      };
+      if (bounds.extendSizeWorld.lengthSquared() === 0) return;
 
       if (
         box.max.x - box.min.x < MIN_COLLIDER_SIZE &&
@@ -126,9 +133,12 @@ class Physics {
   }
 
   addCollider(object) {
-    object.updateWorldMatrix(true, true);
-
-    const box = new THREE.Box3().setFromObject(object);
+    object.computeWorldMatrix(true);
+    const bounds = object.getBoundingInfo().boundingBox;
+    const box = {
+      min: bounds.minimumWorld.clone(),
+      max: bounds.maximumWorld.clone(),
+    };
 
     this.insert(
       { colliders: this.colliders, grid: this.grid, big: this.big },
@@ -150,10 +160,10 @@ class Physics {
    */
   _hit(px, py, pz, mode, ref) {
     const r = this.player.radius;
-    const box = this._box;
-
-    box.min.set(px - r, py, pz - r);
-    box.max.set(px + r, py + this.player.height, pz + r);
+    const boxMin = this._box.minimum;
+    const boxMax = this._box.maximum;
+    boxMin.set(px - r, py, pz - r);
+    boxMax.set(px + r, py + this.player.height, pz + r);
 
     const seen = this._seen;
     seen.clear();
@@ -168,7 +178,10 @@ class Physics {
       if (mode === LANDING && c.max.y > ref) return null;
       if (mode === CEILING && c.min.y < ref) return null;
 
-      return box.intersectsBox(c) ? c : null;
+      const overlaps = boxMin.x <= c.max.x && boxMax.x >= c.min.x &&
+        boxMin.y <= c.max.y && boxMax.y >= c.min.y &&
+        boxMin.z <= c.max.z && boxMax.z >= c.min.z;
+      return overlaps ? c : null;
     };
 
     for (let i = 0; i < this.big.length; i++) {
@@ -176,10 +189,10 @@ class Physics {
       if (hit) return hit;
     }
 
-    const x0 = Math.floor(box.min.x / CELL);
-    const x1 = Math.floor(box.max.x / CELL);
-    const z0 = Math.floor(box.min.z / CELL);
-    const z1 = Math.floor(box.max.z / CELL);
+    const x0 = Math.floor(boxMin.x / CELL);
+    const x1 = Math.floor(boxMax.x / CELL);
+    const z0 = Math.floor(boxMin.z / CELL);
+    const z1 = Math.floor(boxMax.z / CELL);
 
     for (let x = x0; x <= x1; x++) {
       for (let z = z0; z <= z1; z++) {
@@ -211,12 +224,12 @@ class Physics {
   /* ----------------------------- movement ------------------------------ */
 
   setPlayerPosition(position) {
-    this.player.position.copy(position);
+    this.player.position.copyFrom(position);
   }
 
   /** Pass a target vector to avoid allocating. */
   getPlayerPosition(target) {
-    return (target || new THREE.Vector3()).copy(this.player.position);
+    return (target || new Vector3()).copyFrom(this.player.position);
   }
 
   move(delta) {

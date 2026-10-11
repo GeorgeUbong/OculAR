@@ -59,8 +59,7 @@ export default function Footer() {
 
             <p className='mt-5 max-w-sm font-gsans text-sm leading-6 text-white/70'>
               OculAR lets you test and inspect interactive 3D scenes in real time, right in the
-              browser. Upload a model, adjust materials, cameras and lighting, then step inside
-              in VR without heavy software.
+              browser. Upload a model and explore in a virtual environment on your browser
             </p>
           </div>
 
@@ -89,8 +88,7 @@ export default function Footer() {
               About the creator
             </h3>
             <p className='mt-3 max-w-sm font-gsans text-sm leading-6 text-white/70'>
-              Built by a software developer who enjoys turning heavy 3D workflows into simple,
-              fast tools for the web. Say hello on any of the channels above.
+            Ubong George is a UI developer, who enjoys creating user friendly/ centered designs  
             </p>
           </div>
 
