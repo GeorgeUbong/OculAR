@@ -88,7 +88,7 @@ export default function Footer() {
               About the creator
             </h3>
             <p className='mt-3 max-w-sm font-gsans text-sm leading-6 text-white/70'>
-            Ubong George is a UI developer, who enjoys creating user friendly/ centered designs  
+            Ubong George is a UI developer, who enjoys creating user-friendly centered designs  
             </p>
           </div>
 
@@ -114,7 +114,7 @@ export default function Footer() {
 
         <div className='mt-14 flex flex-col gap-2 border-t border-white/15 pt-6 font-gsans text-xs text-white/60 sm:flex-row sm:items-center sm:justify-between'>
           <p>&copy; {new Date().getFullYear()} OculAR. All rights reserved.</p>
-          <p>Designed and developed by your name here.</p>
+          <p>Designed and developed by your ubong George.</p>
         </div>
       </div>
     </footer>

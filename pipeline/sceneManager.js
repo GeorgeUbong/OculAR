@@ -281,12 +281,31 @@ class SceneManager {
 
     entry.container.animationGroups.forEach((group) => group.start(true));
 
-    // Fresh spawn for each model
+    // Compact assets are presented as turntable models; larger scenes keep
+    // first-person navigation. Frame the model from its actual bounds.
+    const meshes = [entry.root, ...entry.root.getChildMeshes(false)].filter((mesh) => mesh.getTotalVertices?.() > 0);
+    const min = new Vector3(Infinity, Infinity, Infinity);
+    const max = new Vector3(-Infinity, -Infinity, -Infinity);
+    for (const mesh of meshes) {
+      mesh.computeWorldMatrix(true);
+      const box = mesh.getBoundingInfo().boundingBox;
+      min.minimizeInPlace(box.minimumWorld);
+      max.maximizeInPlace(box.maximumWorld);
+    }
+    const center = new Vector3((min.x + max.x) / 2, (min.y + max.y) / 2, (min.z + max.z) / 2);
+    const size = max.subtract(min);
+    const largestDimension = Math.max(size.x, size.y, size.z);
+    const singleModel = largestDimension > 0 && largestDimension < 12;
+    const radius = Math.max(size.length() * 0.5, 0.75);
+    this.controls?.setOrbitMode(singleModel, center, radius / Math.sin(this.camera.fov / 2) * 1.15);
+
+    // Fresh spawn for first-person scene navigation
     physics.setPlayerPosition(new Vector3(0, 0, 5));
     physics.player.velocity.set(0, 0, 0);
 
     // Colliders are cached per scene root, so switching back is instant
-    physics.setWorld(entry.root);
+    if (!singleModel) physics.setWorld(entry.root);
+    else physics.setWorld(null);
 
     // VR: teleport targets + respawn for the new model
     this.xrManager?.setFloorMeshes(entry.root.getChildMeshes());
